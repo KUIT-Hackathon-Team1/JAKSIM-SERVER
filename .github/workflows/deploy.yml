@@ -39,27 +39,37 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Ensure deploy directory exists
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            mkdir -p /home/${{ secrets.USERNAME }}/jaksim
+
       - name: Upload docker-compose.prod.yml to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
           source: "docker-compose.prod.yml"
-          target: "/home/${{ secrets.EC2_USER }}/jaksim"
+          target: "/home/${{ secrets.USERNAME }}/jaksim"
+          overwrite: true
 
-      - name: Deploy on EC2 (do NOT touch .env)
+      - name: Deploy on EC2 (do NOT touch .env.prod)
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
           script: |
             set -e
-            cd /home/${{ secrets.EC2_USER }}/jaksim
+            cd /home/${{ secrets.USERNAME }}/jaksim
 
-            if [ ! -f .env ]; then
-              echo ".env not found: /home/${{ secrets.EC2_USER }}/jaksim/.env"
+            if [ ! -f .env.prod ]; then
+              echo ".env.prod not found: /home/${{ secrets.USERNAME }}/jaksim/.env.prod"
               exit 1
             fi
 
