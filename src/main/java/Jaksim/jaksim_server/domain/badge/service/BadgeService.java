@@ -6,13 +6,9 @@ import Jaksim.jaksim_server.domain.progress.model.ChallengeRun;
 import Jaksim.jaksim_server.domain.progress.model.enums.RunStatus;
 import Jaksim.jaksim_server.domain.progress.model.enums.TierStatus;
 import Jaksim.jaksim_server.domain.progress.repository.*;
-import Jaksim.jaksim_server.domain.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -77,6 +73,7 @@ public class BadgeService {
                 run.getId(),
                 run.getGoal().getId(),
                 run.getGoal().getTitle(),
+                run.getGoal().getCategory().getIconKey(),
                 run.getRunStatus(),
                 tier, // IN_PROGRESS면 null 유지
                 run.getStartDate(),
