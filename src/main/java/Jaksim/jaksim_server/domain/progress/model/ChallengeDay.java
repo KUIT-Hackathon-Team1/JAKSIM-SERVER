@@ -1,5 +1,6 @@
 package Jaksim.jaksim_server.domain.progress.model;
 
+import Jaksim.jaksim_server.domain.progress.dto.UpdateDayRequest;
 import Jaksim.jaksim_server.domain.progress.model.enums.DayResult;
 import jakarta.persistence.*;
 import lombok.*;
@@ -73,11 +74,28 @@ public class ChallengeDay {
                 .build();
     }
 
+    //이전코드인데 남겨둡니다.
     public void update(DayResult result, String memo, boolean finalizeDay) {
         this.dayResult = result;
         this.dayMemo = memo;
 
         if (finalizeDay) {
+            this.isFinalized = true;
+            this.finalizedAt = LocalDateTime.now();
+        }
+    }
+
+
+    public void apply(UpdateDayRequest req) {
+        if (req.result() != null) {
+            this.dayResult = req.result();
+        }
+
+        if (req.memo() != null) {
+            this.dayMemo = req.memo();
+        }
+
+        if (Boolean.TRUE.equals(req.finalizeDay())) {
             this.isFinalized = true;
             this.finalizedAt = LocalDateTime.now();
         }

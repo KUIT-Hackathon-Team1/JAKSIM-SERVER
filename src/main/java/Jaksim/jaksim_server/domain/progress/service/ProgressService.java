@@ -78,7 +78,7 @@ public class ProgressService {
         ChallengeDay day = dayRepository.findByRun_IdAndDayIndex(runId, dayIndex)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일차가 없습니다."));
 
-        day.update(req.result(), req.memo(), req.finalizeDay());
+        day.apply(req);
 
         List<ChallengeDay> days = dayRepository.findAllByRun_IdOrderByDayIndexAsc(runId);
 
