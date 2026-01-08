@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: jaksim-server
+
+  profiles:
+    active: local
