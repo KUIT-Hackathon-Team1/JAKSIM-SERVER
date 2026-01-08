@@ -72,6 +72,8 @@ jobs:
               echo ".env.prod not found: /home/${{ secrets.USERNAME }}/jaksim/.env.prod"
               exit 1
             fi
+            
+            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
 
             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
             docker compose -f docker-compose.prod.yml pull
