@@ -1,0 +1,12 @@
+services:
+  app:
+    image: ${DOCKER_USERNAME}/jaksim-server:latest
+    container_name: jaksim-server
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.prod
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=70.0
