@@ -1,7 +1,6 @@
 package Jaksim.jaksim_server.domain.badge.service;
 
-import Jaksim.jaksim_server.domain.badge.dto.BadgeItemResponse;
-import Jaksim.jaksim_server.domain.badge.dto.BadgeSummaryResponse;
+import Jaksim.jaksim_server.domain.badge.dto.*;
 import Jaksim.jaksim_server.domain.progress.model.ChallengeRun;
 import Jaksim.jaksim_server.domain.progress.model.enums.RunStatus;
 import Jaksim.jaksim_server.domain.progress.model.enums.TierStatus;
@@ -25,6 +24,25 @@ public class BadgeService {
                 .filter(r -> includeInProgress || r.getRunStatus() == RunStatus.ENDED)
                 .map(this::toItem)
                 .toList();
+    }
+
+    public BadgeHomeResponse getHome(Long userId) {
+        List<ChallengeRun> runs = runRepository.findAllByGoal_User_IdOrderByStartDateDesc(userId);
+
+        boolean hasInProgress = runs.stream().anyMatch(r -> r.getRunStatus() == RunStatus.IN_PROGRESS);
+
+        List<BadgeItemResponse> items = runs.stream()
+                .map(this::toItem)
+                .toList();
+
+        BadgeSummaryResponse summary = getSummary(userId);
+
+        return new BadgeHomeResponse(
+                summary,
+                hasInProgress,
+                hasInProgress ? null : "star",   // ✅ 진행중 없으면 새 목표 별 아이콘 키
+                items
+        );
     }
 
     public BadgeSummaryResponse getSummary(Long userId) {
