@@ -25,6 +25,7 @@ public class User extends BaseTimeEntity {
 
     //TODO : 사용자가 배지를 가지고 있지 않다. 현재는 서버에 배지가 직접 저장되어서, home으로 쏴주는중. 사용자 거치지 않고.
 
+
     @Builder
     private User(String deviceId) {
         this.deviceId = deviceId;
