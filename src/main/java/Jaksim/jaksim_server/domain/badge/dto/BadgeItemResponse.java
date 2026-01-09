@@ -10,7 +10,7 @@ public record BadgeItemResponse(
         Long runId,
         Long goalId,
         String goalTitle,
-        String iconKey,
+        String category,
         RunStatus runStatus,      // IN_PROGRESS / ENDED
         TierStatus tierStatus,    // 진행중이면 null, 종료면 GOLD/BRONZE/FAIL
         LocalDate startDate,
