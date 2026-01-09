@@ -142,6 +142,11 @@ public class ProgressService {
 
             day.finalizeDay();
 
+            dayRepository.save(day);
+            dayRepository.flush();
+
+            days = dayRepository.findAllByRun_IdOrderByDayIndexAsc(runId);
+
             // ====== 종료 판단 (finalized 된 날들만 기준) ======
             long poorCnt = days.stream()
                     .filter(ChallengeDay::isFinalized)
@@ -161,12 +166,20 @@ public class ProgressService {
             // 1) FAIL 하나라도 뜨면 즉시 종료 + FAIL 확정
             if (failCnt >= 1) {
                 run.endWithTier(TierStatus.FAIL);
+
+                runRepository.save(run);
+                runRepository.flush();
+
                 return toResponse(run, days);
             }
 
             // 2) PARTIAL 2개 이상이면 즉시 종료 + FAIL 확정
             if (poorCnt >= 2) {
                 run.endWithTier(TierStatus.FAIL);
+
+                runRepository.save(run);
+                runRepository.flush();
+
                 return toResponse(run, days);
             }
 
@@ -175,6 +188,9 @@ public class ProgressService {
             if (allFinalized) {
                 TierStatus finalTier = decideFinalTier(successCnt, poorCnt);
                 run.endWithTier(finalTier);
+
+                runRepository.save(run);
+                runRepository.flush();
             }
         }
 

@@ -77,7 +77,9 @@ public class ChallengeDay {
     }
 
     public void finalizeDay() {
+        if (this.isFinalized) return;
         this.isFinalized = true;
+        this.finalizedAt = LocalDateTime.now();
     }
 
     //이전코드인데 남겨둡니다.
