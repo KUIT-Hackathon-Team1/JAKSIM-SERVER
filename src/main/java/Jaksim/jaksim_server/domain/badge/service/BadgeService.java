@@ -70,6 +70,7 @@ public class BadgeService {
                 run.getId(),
                 run.getGoal().getId(),
                 run.getGoal().getTitle(),
+                run.getGoal().getCategory(),
                 run.getGoal().getCategory().getIconKey(),
                 run.getRunStatus(),
                 tier, // IN_PROGRESS면 null 유지

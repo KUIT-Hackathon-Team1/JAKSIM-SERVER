@@ -1,5 +1,6 @@
 package Jaksim.jaksim_server.domain.badge.dto;
 
+import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
 import Jaksim.jaksim_server.domain.progress.model.enums.RunStatus;
 import Jaksim.jaksim_server.domain.progress.model.enums.TierStatus;
 
@@ -10,9 +11,11 @@ public record BadgeItemResponse(
         Long runId,
         Long goalId,
         String goalTitle,
-        String category,
+        GoalCategory category,
+        String categoryIconKey,
         RunStatus runStatus,      // IN_PROGRESS / ENDED
         TierStatus tierStatus,    // 진행중이면 null, 종료면 GOLD/BRONZE/FAIL
+
         LocalDate startDate,
         LocalDate expectedEndDate,
         LocalDateTime endedAt
