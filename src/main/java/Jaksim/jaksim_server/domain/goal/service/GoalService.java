@@ -1,10 +1,7 @@
 package Jaksim.jaksim_server.domain.goal.service;
 
 import Jaksim.jaksim_server.domain.goal.client.GeminiClient;
-import Jaksim.jaksim_server.domain.goal.dto.CreateGoalRequest;
-import Jaksim.jaksim_server.domain.goal.dto.DifficultyAction;
-import Jaksim.jaksim_server.domain.goal.dto.GoalResponse;
-import Jaksim.jaksim_server.domain.goal.dto.SuggestGoalRequest;
+import Jaksim.jaksim_server.domain.goal.dto.*;
 import Jaksim.jaksim_server.domain.goal.model.Goal;
 import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
 import Jaksim.jaksim_server.domain.goal.repository.GoalRepository;
@@ -188,6 +185,13 @@ public class GoalService {
         }
 
         return GoalResponse.from(goal);
+    }
+
+    public TitleAndIntentResponse getTitleAndIntent(Long id) {
+        Goal goal = goalRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NONE_GOAL));
+
+        return TitleAndIntentResponse.from(goal);
     }
 
     private int clampDifficulty(int value) {
