@@ -24,7 +24,7 @@ public class GoalController {
     public ResponseEntity<CommonResponse<List<String>>> getFirstGoal(@RequestHeader("X-Device-Id") String deviceId,
                                                                      @RequestBody SuggestGoalRequest request
     ) {
-        List<String> result = goalService.getGoalFromAI(request.goalCategory(), request.intent());
+        List<String> result = goalService.getGoalFromAINew(request.goalCategory(), request.intent());
         return ResponseEntity.ok(CommonResponse.success(result));
     }
 
