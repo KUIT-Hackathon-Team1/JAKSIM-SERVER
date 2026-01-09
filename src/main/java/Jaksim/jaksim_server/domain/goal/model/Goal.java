@@ -10,7 +10,6 @@ import lombok.*;
 @Entity
 @Table(name = "goals",
         indexes = {
-                @Index(name = "idx_goals_user_primary", columnList = "user_id,is_primary"),
                 @Index(name = "idx_goals_user_active", columnList = "user_id,is_active")
         })
 public class Goal extends BaseTimeEntity {
@@ -40,27 +39,32 @@ public class Goal extends BaseTimeEntity {
     @Column(name = "difficulty_level", nullable = false)
     private int difficultyLevel = 3;
 
-    @Column(name = "is_primary", nullable = false)
-    private boolean isPrimary = true;
-
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
     @Builder
     private Goal(User user, String title, String description, String intent,
-                 GoalCategory category, int difficultyLevel, boolean isPrimary) {
+                 GoalCategory category, int difficultyLevel) {
         this.user = user;
         this.title = title;
         this.description = description;
         this.intent = intent;
         this.category = category;
         this.difficultyLevel = difficultyLevel;
-        this.isPrimary = isPrimary;
         this.isActive = true;
+    }
+
+    public static Goal create(User user, String goalTitle, GoalCategory goalCategory, String intent) {
+        return Goal.builder()
+                .user(user)
+                .title(goalTitle)
+                .intent(intent)
+                .category(goalCategory)
+                .difficultyLevel(3)
+                .build();
     }
 
     public void deactivate() {
         this.isActive = false;
-        this.isPrimary = false;
     }
 }
