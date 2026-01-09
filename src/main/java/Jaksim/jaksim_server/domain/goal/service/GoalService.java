@@ -3,6 +3,7 @@ package Jaksim.jaksim_server.domain.goal.service;
 import Jaksim.jaksim_server.domain.goal.client.GeminiClient;
 import Jaksim.jaksim_server.domain.goal.dto.CreateGoalRequest;
 import Jaksim.jaksim_server.domain.goal.dto.DifficultyAction;
+import Jaksim.jaksim_server.domain.goal.dto.GoalResponse;
 import Jaksim.jaksim_server.domain.goal.dto.SuggestGoalRequest;
 import Jaksim.jaksim_server.domain.goal.model.Goal;
 import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
@@ -172,6 +173,21 @@ public class GoalService {
             System.out.println("JSON 파싱 실패. 응답값: " + rawResponse);
             throw new RuntimeException("AI 응답 파싱 중 오류 발생", e);
         }
+    }
+
+    @Transactional
+    public GoalResponse editGoal(Long id, String title, String intent){
+        Goal goal = goalRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NONE_GOAL));
+
+        if (title != null) {
+            goal.updateTitle(title);
+        }
+        if (intent != null) {
+            goal.updateIntent(intent);
+        }
+
+        return GoalResponse.from(goal);
     }
 
     private int clampDifficulty(int value) {

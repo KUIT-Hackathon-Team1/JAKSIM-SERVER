@@ -77,4 +77,14 @@ public class Goal extends BaseTimeEntity {
     public void deactivate() {
         this.isActive = false;
     }
+
+    public void updateTitle(String title) {
+        if (title == null) throw new IllegalArgumentException("타이들이 존재하지 않습니다");
+        this.title = title.trim();
+    }
+
+    public void updateIntent(String intent) {
+        if (title == null) throw new IllegalArgumentException("의도가 존재하지 않습니다");
+        this.intent = intent;
+    }
 }
