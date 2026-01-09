@@ -2,7 +2,6 @@ package Jaksim.jaksim_server.domain.goal.controller;
 
 import Jaksim.jaksim_server.domain.goal.client.GeminiClient;
 import Jaksim.jaksim_server.domain.goal.dto.CreateGoalRequest;
-import Jaksim.jaksim_server.domain.goal.dto.GetGoalRequest;
 import Jaksim.jaksim_server.domain.goal.dto.SuggestGoalRequest;
 import Jaksim.jaksim_server.domain.goal.service.GoalService;
 import Jaksim.jaksim_server.domain.user.service.UserService;
@@ -23,10 +22,9 @@ public class GoalController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<List<String>>> getFirstGoal(@RequestHeader("X-Device-Id") String deviceId,
-                                                                     @RequestBody GetGoalRequest request
+                                                                     @RequestBody SuggestGoalRequest request
     ) {
-        List<String> result = goalService.getGoalFromAI(request.getGoalCategory(), request.getIntent());
-        goalService.save(deviceId, request.getGoalCategory(), request.getIntent());
+        List<String> result = goalService.getGoalFromAI(request.goalCategory(), request.intent());
         return ResponseEntity.ok(CommonResponse.success(result));
     }
 
@@ -35,11 +33,11 @@ public class GoalController {
     }
 
     @PostMapping("/ai")
-    public ResponseEntity<CommonResponse<String[]>> getGoal(@RequestHeader("X-Device-Id") String deviceId,
+    public ResponseEntity<CommonResponse<List<String>>> getGoal(@RequestHeader("X-Device-Id") String deviceId,
                                                             @RequestBody SuggestGoalRequest request
     ) {
         Long userId = userFrom(deviceId);
-        String[] result = goalService.suggestGoals(userId,request);
+        List<String> result = goalService.suggestGoals(userId,request);
         return ResponseEntity.ok(CommonResponse.success(result));
     }
 

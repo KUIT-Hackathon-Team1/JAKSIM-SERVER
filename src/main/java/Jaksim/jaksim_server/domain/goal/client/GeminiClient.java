@@ -1,7 +1,6 @@
 package Jaksim.jaksim_server.domain.goal.client;
 
 import Jaksim.jaksim_server.domain.goal.dto.GeminiRequest;
-import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
 import Jaksim.jaksim_server.domain.goal.property.GeminiProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

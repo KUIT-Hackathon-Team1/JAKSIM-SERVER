@@ -59,18 +59,18 @@ public class GoalService {
         return goal.getId();
     }
 
-    public String[] suggestGoals(Long userId, SuggestGoalRequest req) {
+    public List<String> suggestGoals(Long userId, SuggestGoalRequest req) {
 
         // 난이도 변경이면 baseGoal 검증 후 prompt 구성에 활용
         if (req.baseGoalId() != null) {
             Goal base = goalRepository.findByIdAndUserId(req.baseGoalId(), userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.NONE_GOAL));
 
-            return geminiClient.generate(req.goalCategory(),req.intent());
+            return getGoalFromAI(req.goalCategory(),req.intent());
         }
 
         // 새 목표 생성(카테고리+의도 기반)
-        return geminiClient.generate(req.goalCategory(),req.intent());
+        return getGoalFromAI(req.goalCategory(),req.intent());
     }
 
     @Transactional
