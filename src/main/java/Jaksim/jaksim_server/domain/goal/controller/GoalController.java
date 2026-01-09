@@ -1,7 +1,7 @@
 package Jaksim.jaksim_server.domain.goal.controller;
 
+import Jaksim.jaksim_server.domain.goal.client.GeminiClient;
 import Jaksim.jaksim_server.domain.goal.dto.CreateGoalRequest;
-import Jaksim.jaksim_server.domain.goal.dto.GetGoalRequest;
 import Jaksim.jaksim_server.domain.goal.dto.SuggestGoalRequest;
 import Jaksim.jaksim_server.domain.goal.service.GoalService;
 import Jaksim.jaksim_server.domain.user.service.UserService;
@@ -10,23 +10,34 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/goal")
 public class GoalController {
     private final UserService userService;
     private final GoalService goalService;
+    GeminiClient geminiClient;
+
+    @PostMapping
+    public ResponseEntity<CommonResponse<List<String>>> getFirstGoal(@RequestHeader("X-Device-Id") String deviceId,
+                                                                     @RequestBody SuggestGoalRequest request
+    ) {
+        List<String> result = goalService.getGoalFromAI(request.goalCategory(), request.intent());
+        return ResponseEntity.ok(CommonResponse.success(result));
+    }
 
     private Long userFrom(String deviceId) {
         return userService.getOrCreateByDeviceId(deviceId).getId();
     }
 
     @PostMapping("/ai")
-    public ResponseEntity<CommonResponse<String[]>> getGoal(@RequestHeader("X-Device-Id") String deviceId,
-                                                  @RequestBody SuggestGoalRequest request
+    public ResponseEntity<CommonResponse<List<String>>> getGoal(@RequestHeader("X-Device-Id") String deviceId,
+                                                            @RequestBody SuggestGoalRequest request
     ) {
         Long userId = userFrom(deviceId);
-        String[] result = goalService.suggestGoals(userId,request);
+        List<String> result = goalService.suggestGoals(userId,request);
         return ResponseEntity.ok(CommonResponse.success(result));
     }
 
