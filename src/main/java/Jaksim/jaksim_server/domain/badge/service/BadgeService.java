@@ -17,32 +17,11 @@ public class BadgeService {
 
     private final ChallengeRunRepository runRepository;
 
-    public List<BadgeItemResponse> getBadges(Long userId, boolean includeInProgress) {
-        List<ChallengeRun> runs = runRepository.findAllByGoal_User_IdOrderByStartDateDesc(userId);
-
-        return runs.stream()
-                .filter(r -> includeInProgress || r.getRunStatus() == RunStatus.ENDED)
+    public List<BadgeItemResponse> getBadges(Long userId) {
+        return runRepository.findAllByGoal_User_IdOrderByStartDateDesc(userId)
+                .stream()
                 .map(this::toItem)
                 .toList();
-    }
-
-    public BadgeHomeResponse getHome(Long userId) {
-        List<ChallengeRun> runs = runRepository.findAllByGoal_User_IdOrderByStartDateDesc(userId);
-
-        boolean hasInProgress = runs.stream().anyMatch(r -> r.getRunStatus() == RunStatus.IN_PROGRESS);
-
-        List<BadgeItemResponse> items = runs.stream()
-                .map(this::toItem)
-                .toList();
-
-        BadgeSummaryResponse summary = getSummary(userId);
-
-        return new BadgeHomeResponse(
-                summary,
-                hasInProgress,
-                hasInProgress ? null : "star",   // ✅ 진행중 없으면 새 목표 별 아이콘 키
-                items
-        );
     }
 
     public BadgeSummaryResponse getSummary(Long userId) {

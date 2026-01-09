@@ -2,14 +2,13 @@ package Jaksim.jaksim_server.domain.progress.controller;
 
 import Jaksim.jaksim_server.domain.progress.dto.*;
 import Jaksim.jaksim_server.domain.progress.service.ProgressService;
-import Jaksim.jaksim_server.domain.user.model.User;
 import Jaksim.jaksim_server.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/progress")
+@RequestMapping("/api/progress")
 public class ProgressController {
 
     private final UserService userService;
