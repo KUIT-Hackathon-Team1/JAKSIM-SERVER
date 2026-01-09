@@ -18,7 +18,6 @@ import java.util.List;
 public class GoalController {
     private final UserService userService;
     private final GoalService goalService;
-    GeminiClient geminiClient;
 
     @PostMapping
     public ResponseEntity<CommonResponse<List<String>>> getFirstGoal(@RequestHeader("X-Device-Id") String deviceId,
