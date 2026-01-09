@@ -95,6 +95,7 @@ public class ProgressService {
             day.setDayResult(req.result());
             dayRepository.saveAndFlush(day); // 시연/안정성 위해 강추
         }
+        day.apply(req);
 
         // 하루 끝내기
         if (wantsFinalize) {
