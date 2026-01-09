@@ -6,6 +6,7 @@ import Jaksim.jaksim_server.domain.progress.model.enums.TierStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record BadgeItemResponse(
         Long runId,
@@ -15,10 +16,10 @@ public record BadgeItemResponse(
         String categoryIconKey,
         RunStatus runStatus,      // IN_PROGRESS / ENDED
         TierStatus tierStatus,    // 진행중이면 null, 종료면 GOLD/BRONZE/FAIL
-
         LocalDate startDate,
         LocalDate expectedEndDate,
-        LocalDateTime endedAt
+        LocalDateTime endedAt,
+        List<BadgeBorderStatus> border
 ) {
     public boolean inProgress() {
         return runStatus == RunStatus.IN_PROGRESS;
