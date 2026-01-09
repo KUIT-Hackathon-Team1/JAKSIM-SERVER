@@ -245,6 +245,7 @@ public class ProgressService {
                 run.getId(),
                 run.getGoal().getId(),
                 run.getGoal().getTitle(),
+                run.getGoal().getIntent(),
                 run.getStartDate(),
                 run.getExpectedEndDate(),
                 currentDayIndex,

@@ -9,6 +9,7 @@ public record RunDetailResponse(
         Long runId, //
         Long goalId,
         String goalTitle,
+        String goalIntent,
         LocalDate startDate,
         LocalDate expectedEndDate,
         int currentDayIndex, //
