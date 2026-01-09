@@ -91,49 +91,6 @@ public class ProgressService {
         boolean hasResult = req.result() != null;
         boolean wantsFinalize = req.finalizeDay();
 
-        // 미래일 선택 금지
-        if (dayIndex > currentDayIndex) {
-            throw new CustomException(ErrorCode.FUTURE_SELECTION);
-        }
-
-        // memo 상시 수정가능
-        if (hasMemo) {
-            day.setDayMemo(req.memo());
-        }
-
-        // 여기부터 result/finalize 정책
-
-        // run이 ENDED면 result/finalize 불가 (memo만)
-        if (run.isEnded()) {
-            if (hasResult || wantsFinalize) {
-                throw new CustomException(ErrorCode.ACCESS_TO_FINISHED);
-            }
-            return toResponse(run, days);
-        }
-
-        // 과거 일차면 memo만 허용
-        if (dayIndex < currentDayIndex) {
-            if (hasResult || wantsFinalize) {
-                throw new CustomException(ErrorCode.PAST_ONLY_MEMO);
-            }
-            return toResponse(run, days);
-        }
-
-        // 현재 일차(dayIndex == currentDayIndex)
-
-        // 이미 확정된 날이면 memo만 허용
-        if (day.isFinalized()) {
-            if (hasResult || wantsFinalize) {
-                throw new CustomException(ErrorCode.PAST_ACCESS);
-            }
-            return toResponse(run, days);
-        }
-
-        // 현재 일차 + 미확정일 때만 result 변경 허용
-        if (hasResult) {
-            day.setDayResult(req.result());
-        }
-
         // 하루 끝내기
         if (wantsFinalize) {
             if (day.getDayResult() == null || day.getDayResult() == DayResult.NOT_SET) {
@@ -194,6 +151,51 @@ public class ProgressService {
             }
         }
 
+        // 미래일 선택 금지
+        if (dayIndex > currentDayIndex) {
+            throw new CustomException(ErrorCode.FUTURE_SELECTION);
+        }
+
+        // memo 상시 수정가능
+        if (hasMemo) {
+            day.setDayMemo(req.memo());
+        }
+
+        // 여기부터 result/finalize 정책
+
+        // run이 ENDED면 result/finalize 불가 (memo만)
+        if (run.isEnded()) {
+            if (hasResult || wantsFinalize) {
+                throw new CustomException(ErrorCode.ACCESS_TO_FINISHED);
+            }
+            return toResponse(run, days);
+        }
+
+        // 과거 일차면 memo만 허용
+        if (dayIndex < currentDayIndex) {
+            if (hasResult || wantsFinalize) {
+                throw new CustomException(ErrorCode.PAST_ONLY_MEMO);
+            }
+            return toResponse(run, days);
+        }
+
+        // 현재 일차(dayIndex == currentDayIndex)
+
+        // 이미 확정된 날이면 memo만 허용
+        if (day.isFinalized()) {
+            if (hasResult || wantsFinalize) {
+                throw new CustomException(ErrorCode.PAST_ACCESS);
+            }
+            return toResponse(run, days);
+        }
+
+        // 현재 일차 + 미확정일 때만 result 변경 허용
+        if (hasResult) {
+            day.setDayResult(req.result());
+        }
+
+
+
         return toResponse(run, days);
     }
 
@@ -240,9 +242,9 @@ public class ProgressService {
                 .filter(ChallengeDay::isFinalized)
                 .mapToInt(ChallengeDay::getDayIndex)
                 .max()
-                .orElse(1);
+                .orElse(0);
 
-        return Math.min(byDate, lastFinalized);
+        return Math.min(1, Math.min(TARGET_DAYS, lastFinalized == 0 ? 1 : lastFinalized));
     }
 
     private RunDetailResponse toResponse(ChallengeRun run, List<ChallengeDay> days) {
