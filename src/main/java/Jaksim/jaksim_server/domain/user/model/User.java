@@ -23,17 +23,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
-    @Column(name = "complete_loop", nullable = false)
-    private int completeLoop = 0;
-
-    @Column(name = "successive_success", nullable = false)
-    private int successiveSuccess = 0;
-
-    @Column(name = "total_goals", nullable = false)
-    private int totalGoals = 0;
-
-    @Column(name = "success_goals", nullable = false)
-    private int successGoals = 0;
+    //TODO : 사용자가 배지를 가지고 있지 않다. 현재는 서버에 배지가 직접 저장되어서, home으로 쏴주는중. 사용자 거치지 않고.
 
     @Builder
     private User(String deviceId) {
