@@ -2,6 +2,7 @@ package Jaksim.jaksim_server.domain.goal.client;
 
 import Jaksim.jaksim_server.domain.goal.dto.GeminiRequest;
 import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
+import Jaksim.jaksim_server.domain.goal.property.GeminiProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -15,12 +16,13 @@ import java.util.List;
 @Slf4j
 public class GeminiClient {
     private final WebClient webClient;
+    private final GeminiProperties props;
 
     public String generate(String prompt) {
         return webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1beta/models/gemini-2.5-flash:generateContent")
-                        .queryParam("key", "")
+                        .queryParam("key", props.api().key())
                         .build()
                 )
                 .contentType(MediaType.APPLICATION_JSON)
