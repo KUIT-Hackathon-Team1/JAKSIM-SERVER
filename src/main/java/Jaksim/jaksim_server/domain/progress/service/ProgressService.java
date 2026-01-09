@@ -227,25 +227,23 @@ public class ProgressService {
     }
 
     private int computeCurrentDayIndex(ChallengeRun run, List<ChallengeDay> days) {
-        LocalDate start = run.getStartDate();
-        LocalDate today = LocalDate.now();
-
-        int byDate = (int) (ChronoUnit.DAYS.between(start, today) + 1);
-        if (byDate < 1) byDate = 1;
-        if (byDate > TARGET_DAYS) byDate = TARGET_DAYS;
-
-        if (!run.isEnded()) {
-            return byDate;
-        }
+        int targetDays = run.getTargetDays();
 
         int lastFinalized = days.stream()
                 .filter(ChallengeDay::isFinalized)
                 .mapToInt(ChallengeDay::getDayIndex)
                 .max()
-                .orElse(0);
+                .orElse(0); // 아무것도 확정 안 됐으면 0
 
-        return Math.min(1, Math.min(TARGET_DAYS, lastFinalized == 0 ? 1 : lastFinalized));
+        if (!run.isEnded()) {
+            // ✅ "하루 끝내기" 하면 즉시 다음 일차로 넘어가게
+            return Math.min(targetDays, lastFinalized + 1);
+        }
+
+        // ENDED면 마지막 확정일까지만 보여주기(없으면 1)
+        return Math.max(1, Math.min(targetDays, lastFinalized == 0 ? 1 : lastFinalized));
     }
+
 
     private RunDetailResponse toResponse(ChallengeRun run, List<ChallengeDay> days) {
         int currentDayIndex = computeCurrentDayIndex(run, days);
