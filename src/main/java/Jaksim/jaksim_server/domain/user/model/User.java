@@ -23,6 +23,18 @@ public class User extends BaseTimeEntity {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
+    @Column(name = "complete_loop", nullable = false)
+    private int completeLoop = 0;
+
+    @Column(name = "successive_success", nullable = false)
+    private int successiveSuccess = 0;
+
+    @Column(name = "total_goals", nullable = false)
+    private int totalGoals = 0;
+
+    @Column(name = "success_goals", nullable = false)
+    private int successGoals = 0;
+
     @Builder
     private User(String deviceId) {
         this.deviceId = deviceId;
