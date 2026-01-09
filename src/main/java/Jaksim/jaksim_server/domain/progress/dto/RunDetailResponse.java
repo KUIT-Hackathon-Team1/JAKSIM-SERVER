@@ -6,11 +6,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record RunDetailResponse(
-        Long runId,
+        Long runId, //
         Long goalId,
         String goalTitle,
         LocalDate startDate,
         LocalDate expectedEndDate,
+        int currentDayIndex, //
         RunStatus runStatus,
         TierStatus tierStatus, // ✅ 진행중이면 null, 종료면 GOLD/BRONZE/FAIL
         List<DayDto> days

@@ -43,10 +43,12 @@ public class ChallengeDay {
     @Column(name = "day_date", nullable = false)
     private LocalDate dayDate;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "day_result", nullable = false, length = 20)
     private DayResult dayResult = DayResult.NOT_SET;
 
+    @Setter
     @Column(name = "day_memo", length = 100)
     private String dayMemo;
 
@@ -74,6 +76,10 @@ public class ChallengeDay {
                 .build();
     }
 
+    public void finalizeDay() {
+        this.isFinalized = true;
+    }
+
     //이전코드인데 남겨둡니다.
     public void update(DayResult result, String memo, boolean finalizeDay) {
         this.dayResult = result;
@@ -85,7 +91,7 @@ public class ChallengeDay {
         }
     }
 
-
+    //이전 코드인데 남겨둡니다.
     public void apply(UpdateDayRequest req) {
         if (req.result() != null) {
             this.dayResult = req.result();
@@ -95,7 +101,7 @@ public class ChallengeDay {
             this.dayMemo = req.memo();
         }
 
-        if (Boolean.TRUE.equals(req.finalizeDay())) {
+        if (req.finalizeDay()) {
             this.isFinalized = true;
             this.finalizedAt = LocalDateTime.now();
         }
