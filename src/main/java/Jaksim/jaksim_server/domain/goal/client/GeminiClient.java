@@ -1,6 +1,7 @@
 package Jaksim.jaksim_server.domain.goal.client;
 
 import Jaksim.jaksim_server.domain.goal.dto.GeminiRequest;
+import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
 import Jaksim.jaksim_server.domain.goal.property.GeminiProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +18,10 @@ public class GeminiClient {
     private final WebClient webClient;
     private final GeminiProperties props;
 
-    public String generate() {
+    public String[] generate(GoalCategory goalCategory, String intent) {
         System.out.println(props.api().key());
         String prompt = "인사해줘";
-        return webClient.post()
+        return new String[]{webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1beta/models/gemini-2.5-flash:generateContent")
                         .queryParam("key", props.api().key())
@@ -36,7 +37,7 @@ public class GeminiClient {
                                 .map(RuntimeException::new)
                 )
                 .bodyToMono(String.class)
-                .block();
+                .block()};
     }
 
     private GeminiRequest createBody(String prompt) {
