@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/goal")
@@ -16,12 +18,11 @@ public class GoalController {
     GeminiClient geminiClient;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<String>> getGoal(@RequestHeader("X-Device-Id") String deviceId,
+    public ResponseEntity<CommonResponse<List<String>>> getFirstGoal(@RequestHeader("X-Device-Id") String deviceId,
                                                   @RequestBody GetGoalRequest request
     ) {
-        goalService.save(deviceId, request.getGoalTitle(), request.getGoalCategory(), request.getIntent());
-        // AI 넘기기 로직 추가
-        String result = goalService.getGoalFromAI();
+        List<String> result = goalService.getGoalFromAI(request.getGoalCategory(), request.getIntent());
+        goalService.save(deviceId, request.getGoalCategory(), request.getIntent());
         return ResponseEntity.ok(CommonResponse.success(result));
     }
 }

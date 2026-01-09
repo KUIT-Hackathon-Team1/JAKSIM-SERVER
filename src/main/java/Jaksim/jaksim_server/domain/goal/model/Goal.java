@@ -54,10 +54,10 @@ public class Goal extends BaseTimeEntity {
         this.isActive = true;
     }
 
-    public static Goal create(User user, String goalTitle, GoalCategory goalCategory, String intent) {
+    public static Goal create(User user, GoalCategory goalCategory, String intent) {
         return Goal.builder()
                 .user(user)
-                .title(goalTitle)
+                .title("Hello")
                 .intent(intent)
                 .category(goalCategory)
                 .difficultyLevel(3)
