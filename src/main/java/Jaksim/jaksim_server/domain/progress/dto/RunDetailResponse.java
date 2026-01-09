@@ -1,5 +1,6 @@
 package Jaksim.jaksim_server.domain.progress.dto;
 
+import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
 import Jaksim.jaksim_server.domain.progress.model.enums.*;
 
 import java.time.LocalDate;
@@ -10,6 +11,8 @@ public record RunDetailResponse(
         Long goalId,
         String goalTitle,
         String goalIntent,
+        GoalCategory category,
+        String categoryIconKey,
         LocalDate startDate,
         LocalDate expectedEndDate,
         int currentDayIndex, //
