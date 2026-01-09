@@ -2,6 +2,7 @@ package Jaksim.jaksim_server.domain.progress.dto;
 
 import Jaksim.jaksim_server.domain.goal.model.GoalCategory;
 import Jaksim.jaksim_server.domain.progress.model.enums.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,7 +25,7 @@ public record RunDetailResponse(
             int dayIndex,
             LocalDate date,
             DayResult result,
-            boolean finalized,
+            @JsonProperty("finalized") boolean finalized,
             String memo
     ) {}
 }
