@@ -4,6 +4,7 @@ import Jaksim.jaksim_server.domain.goal.client.GeminiClient;
 import Jaksim.jaksim_server.domain.goal.dto.CreateGoalRequest;
 import Jaksim.jaksim_server.domain.goal.dto.GoalResponse;
 import Jaksim.jaksim_server.domain.goal.dto.SuggestGoalRequest;
+import Jaksim.jaksim_server.domain.goal.dto.TitleAndIntentResponse;
 import Jaksim.jaksim_server.domain.goal.service.GoalService;
 import Jaksim.jaksim_server.domain.user.service.UserService;
 import Jaksim.jaksim_server.global.response.CommonResponse;
@@ -59,7 +60,16 @@ public class GoalController {
         return CommonResponse.success(goalId);
     }
 
-    @PatchMapping("/edit/{goalId}")
+    @GetMapping("/{goalId}")
+    public ResponseEntity<CommonResponse<TitleAndIntentResponse>> getGoalIngo(
+            @RequestHeader("X-Device-Id") String deviceId,
+            @PathVariable Long goalId
+    ){
+        TitleAndIntentResponse response = goalService.getTitleAndIntent(goalId);
+        return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
+    @PatchMapping("/{goalId}")
     public ResponseEntity<CommonResponse<GoalResponse>> edit(
             @RequestHeader("X-Device-Id") String deviceId,
             @PathVariable Long goalId,
