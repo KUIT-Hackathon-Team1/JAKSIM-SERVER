@@ -84,7 +84,7 @@ public class ProgressService {
 
         List<ChallengeDay> days = dayRepository.findAllByRun_IdOrderByDayIndexAsc(runId);
 
-        int currentDayIndex = computeCurrentDayIndex(run, days); // ✅ 오늘 기준 선택 가능 일차
+        int currentDayIndex = computeCurrentDayIndex(run, days);
 
         boolean hasMemo = req.memo() != null;
         boolean hasResult = req.result() != null;
