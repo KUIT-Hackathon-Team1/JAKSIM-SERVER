@@ -1,17 +1,17 @@
-package Jaksim.jaksim_server.service.user;
+package Jaksim.jaksim_server.domain.user.service;
 
 import Jaksim.jaksim_server.domain.user.model.User;
-import Jaksim.jaksim_server.dto.user.UserResponse;
+import Jaksim.jaksim_server.domain.user.repository.UserRepository;
+import Jaksim.jaksim_server.domain.user.dto.UserResponse;
 import Jaksim.jaksim_server.global.exception.CustomException;
 import Jaksim.jaksim_server.global.exception.ErrorCode;
-import Jaksim.jaksim_server.repository.user.UserStatRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserStatService {
-    private final UserStatRepository userRepository;
+    private final UserRepository userRepository;
 
-    public UserStatService(UserStatRepository userRepository) {
+    public UserStatService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

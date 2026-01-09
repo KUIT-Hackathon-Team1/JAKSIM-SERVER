@@ -1,4 +1,4 @@
-package Jaksim.jaksim_server.dto.user;
+package Jaksim.jaksim_server.domain.user.dto;
 
 import Jaksim.jaksim_server.domain.user.model.User;
 

@@ -17,4 +17,5 @@ public class UserService {
         return userRepository.findByDeviceId(deviceId)
                 .orElseGet(() -> userRepository.save(User.create(deviceId)));
     }
+
 }

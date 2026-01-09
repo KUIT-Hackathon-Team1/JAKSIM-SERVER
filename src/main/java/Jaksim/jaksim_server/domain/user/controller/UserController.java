@@ -1,8 +1,8 @@
-package Jaksim.jaksim_server.controller.user;
+package Jaksim.jaksim_server.domain.user.controller;
 
-import Jaksim.jaksim_server.dto.user.UserResponse;
+import Jaksim.jaksim_server.domain.user.dto.UserResponse;
 import Jaksim.jaksim_server.global.response.CommonResponse;
-import Jaksim.jaksim_server.service.user.UserStatService;
+import Jaksim.jaksim_server.domain.user.service.UserStatService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
