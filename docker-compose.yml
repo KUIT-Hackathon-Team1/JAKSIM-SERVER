@@ -24,7 +24,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: dev
+#      target: dev
     container_name: jaksim-server
     ports:
       - "${APP_PORT}:8080"
