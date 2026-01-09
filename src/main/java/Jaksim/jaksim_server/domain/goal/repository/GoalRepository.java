@@ -11,6 +11,9 @@ import java.util.Optional;
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     Optional<Goal> findByIdAndUserId(Long goalId, Long userId);
 
+    @Query("select g from Goal g where g.user.id = :userId and g.isActive = true")
+    Optional<Goal> findActiveByUserId(@Param("userId") Long userId);
+
     @Modifying
     @Query("update Goal g set g.isActive = false where g.user.id = :userId and g.isActive = true")
     int deactivateAllActive(@Param("userId") Long userId);

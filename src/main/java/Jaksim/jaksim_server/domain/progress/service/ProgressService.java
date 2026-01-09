@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -27,16 +28,16 @@ public class ProgressService {
     private final ChallengeDayRepository dayRepository;
 
     @Transactional
-    public RunDetailResponse startRun(Long userId, StartRunRequest req) {
+    public RunDetailResponse startRun(Long userId) {
         // 1) Goal 소유 검증 포함해서 조회 (메서드명은 GoalRepository에 맞춰 조정)
-        Goal goal = goalRepository.findByIdAndUserId(req.goalId(), userId)
+        Goal goal = goalRepository.findActiveByUserId(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NONE_GOAL));
 
         // 2) 목표당 진행중 run 1개 제한
         runRepository.findTopByGoal_IdAndRunStatusOrderByStartDateDesc(goal.getId(), RunStatus.IN_PROGRESS)
                 .ifPresent(r -> { throw new CustomException(ErrorCode.ALREADY_PROGRESS); });
 
-        LocalDate startDate = (req.startDate() != null) ? req.startDate() : LocalDate.now();
+        LocalDate startDate = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
         // 3) Run 생성 (goal 엔티티 연결)
         ChallengeRun run = runRepository.save(ChallengeRun.start(goal, startDate));

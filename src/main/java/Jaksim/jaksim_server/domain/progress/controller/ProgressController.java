@@ -20,10 +20,9 @@ public class ProgressController {
 
     @PostMapping("/runs")
     public RunDetailResponse startRun(
-            @RequestHeader("X-Device-Id") String deviceId,
-            @RequestBody StartRunRequest request
+            @RequestHeader("X-Device-Id") String deviceId
     ) {
-        return progressService.startRun(userFrom(deviceId), request);
+        return progressService.startRun(userFrom(deviceId));
     }
 
     @GetMapping("/runs/{runId}")
