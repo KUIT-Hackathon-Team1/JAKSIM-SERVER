@@ -6,6 +6,8 @@ import Jaksim.jaksim_server.domain.progress.dto.*;
 import Jaksim.jaksim_server.domain.progress.model.*;
 import Jaksim.jaksim_server.domain.progress.model.enums.*;
 import Jaksim.jaksim_server.domain.progress.repository.*;
+import Jaksim.jaksim_server.global.exception.CustomException;
+import Jaksim.jaksim_server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +30,11 @@ public class ProgressService {
     public RunDetailResponse startRun(Long userId, StartRunRequest req) {
         // 1) Goal 소유 검증 포함해서 조회 (메서드명은 GoalRepository에 맞춰 조정)
         Goal goal = goalRepository.findByIdAndUserId(req.goalId(), userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NONE_GOAL));
 
         // 2) 목표당 진행중 run 1개 제한
         runRepository.findTopByGoal_IdAndRunStatusOrderByStartDateDesc(goal.getId(), RunStatus.IN_PROGRESS)
-                .ifPresent(r -> { throw new IllegalStateException("이미 진행 중인 3일 목표가 있습니다."); });
+                .ifPresent(r -> { throw new CustomException(ErrorCode.ALREADY_PROGRESS); });
 
         LocalDate startDate = (req.startDate() != null) ? req.startDate() : LocalDate.now();
 
@@ -53,11 +55,11 @@ public class ProgressService {
     @Transactional(readOnly = true)
     public RunDetailResponse getRunDetail(Long userId, Long runId) {
         ChallengeRun run = runRepository.findById(runId)
-                .orElseThrow(() -> new IllegalArgumentException("도전 기록이 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NONE_RECORD));
 
         // run -> goal -> user 소유 검증 (Goal에 user가 연결돼있다는 전제)
         if (!run.getGoal().getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         List<ChallengeDay> days = dayRepository.findAllByRun_IdOrderByDayIndexAsc(runId);
@@ -67,18 +69,18 @@ public class ProgressService {
     @Transactional
     public RunDetailResponse updateDay(Long userId, Long runId, int dayIndex, UpdateDayRequest req) {
         ChallengeRun run = runRepository.findById(runId)
-                .orElseThrow(() -> new IllegalArgumentException("도전 기록이 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NONE_RECORD));
 
         if (!run.getGoal().getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         if (dayIndex < 1 || dayIndex > 3) {
-            throw new IllegalArgumentException("dayIndex는 1~3만 가능합니다.");
+            throw new CustomException(ErrorCode.INVALID_DAYINDEX_RANGE);
         }
 
         ChallengeDay day = dayRepository.findByRun_IdAndDayIndex(runId, dayIndex)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일차가 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NONE_DATE));
 
         List<ChallengeDay> days = dayRepository.findAllByRun_IdOrderByDayIndexAsc(runId);
 
@@ -90,7 +92,7 @@ public class ProgressService {
 
         // 미래일 선택 금지
         if (dayIndex > currentDayIndex) {
-            throw new IllegalStateException("아직 진행할 수 없는 일차입니다.");
+            throw new CustomException(ErrorCode.FUTURE_SELECTION);
         }
 
         // memo 상시 수정가능
@@ -103,7 +105,7 @@ public class ProgressService {
         // run이 ENDED면 result/finalize 불가 (memo만)
         if (run.isEnded()) {
             if (hasResult || wantsFinalize) {
-                throw new IllegalStateException("종료된 도전은 달성 여부를 수정할 수 없습니다.");
+                throw new CustomException(ErrorCode.ACCESS_TO_FINISHED);
             }
             return toResponse(run, days);
         }
@@ -111,7 +113,7 @@ public class ProgressService {
         // 과거 일차면 memo만 허용
         if (dayIndex < currentDayIndex) {
             if (hasResult || wantsFinalize) {
-                throw new IllegalStateException("지난 일차는 메모만 수정할 수 있습니다.");
+                throw new CustomException(ErrorCode.PAST_ONLY_MEMO);
             }
             return toResponse(run, days);
         }
@@ -121,7 +123,7 @@ public class ProgressService {
         // 이미 확정된 날이면 memo만 허용
         if (day.isFinalized()) {
             if (hasResult || wantsFinalize) {
-                throw new IllegalStateException("이미 종료한 일차는 달성 여부를 수정할 수 없습니다.");
+                throw new CustomException(ErrorCode.PAST_ACCESS);
             }
             return toResponse(run, days);
         }
@@ -134,7 +136,7 @@ public class ProgressService {
         // 하루 끝내기
         if (wantsFinalize) {
             if (day.getDayResult() == null || day.getDayResult() == DayResult.NOT_SET) {
-                throw new IllegalArgumentException("하루 끝내기 전에 달성 여부를 선택해야 합니다.");
+                throw new CustomException(ErrorCode.MUST_SELECT_BEFORE_DAY);
             }
 
             day.finalizeDay();
@@ -181,10 +183,10 @@ public class ProgressService {
     @Transactional
     public RunDetailResponse giveUp(Long userId, Long runId) {
         ChallengeRun run = runRepository.findById(runId)
-                .orElseThrow(() -> new IllegalArgumentException("도전 기록이 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NONE_RECORD));
 
         if (!run.getGoal().getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
+            throw  new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         // 이미 종료면 그대로 반환
