@@ -91,6 +91,11 @@ public class ProgressService {
         boolean hasResult = req.result() != null;
         boolean wantsFinalize = req.finalizeDay();
 
+        if (hasResult) {
+            day.setDayResult(req.result());
+            dayRepository.saveAndFlush(day); // 시연/안정성 위해 강추
+        }
+
         // 하루 끝내기
         if (wantsFinalize) {
             if (day.getDayResult() == null || day.getDayResult() == DayResult.NOT_SET) {
