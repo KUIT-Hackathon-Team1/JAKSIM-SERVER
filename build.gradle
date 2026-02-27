@@ -36,10 +36,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // Swagger / OpenAPI
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 
     //WebClient
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework:spring-webflux'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

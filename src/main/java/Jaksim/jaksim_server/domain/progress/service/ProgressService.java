@@ -9,14 +9,15 @@ import Jaksim.jaksim_server.domain.progress.repository.*;
 import Jaksim.jaksim_server.global.exception.CustomException;
 import Jaksim.jaksim_server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProgressService {
@@ -69,8 +70,19 @@ public class ProgressService {
 
     @Transactional
     public RunDetailResponse updateDay(Long userId, Long runId, int dayIndex, UpdateDayRequest req) {
+        log.info("[updateDay:service] userId={}, runId={}, dayIndex={}", userId, runId, dayIndex);
+
+        if (req == null) {
+            log.warn("[updateDay:service] req is NULL -> cannot finalize");
+            // 여기서 예외 던지든 기본값 처리하든 선택
+        } else {
+            log.info("[updateDay:service] req.result={}, req.memo={}, req.finalizeDay={}, wantsFinalize={}",
+                    req.result(), req.memo(), req.finalizeDay(), req.wantsFinalize());
+        }
+
         ChallengeRun run = runRepository.findById(runId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NONE_RECORD));
+
 
         if (!run.getGoal().getUser().getId().equals(userId)) {
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
@@ -89,14 +101,25 @@ public class ProgressService {
 
         boolean hasMemo = req.memo() != null;
         boolean hasResult = req.result() != null;
-        boolean wantsFinalize = req.finalizeDay();
+        boolean wantsFinalize = Boolean.TRUE.equals(req.finalizeDay());
 
         if (hasResult) {
             day.setDayResult(req.result());
             dayRepository.saveAndFlush(day); // 시연/안정성 위해 강추
         }
-        day.apply(req);
+        //day.apply(req);
 
+        // 미래일 선택 금지
+        if (dayIndex > currentDayIndex) {
+            throw new CustomException(ErrorCode.FUTURE_SELECTION);
+        }
+
+        // memo 상시 수정가능
+        if (hasMemo) {
+            day.setDayMemo(req.memo());
+        }
+
+        // 여기부터 result/finalize 정책
         // 하루 끝내기
         if (wantsFinalize) {
             if (day.getDayResult() == null || day.getDayResult() == DayResult.NOT_SET) {
@@ -156,18 +179,6 @@ public class ProgressService {
                 runRepository.flush();
             }
         }
-
-        // 미래일 선택 금지
-        if (dayIndex > currentDayIndex) {
-            throw new CustomException(ErrorCode.FUTURE_SELECTION);
-        }
-
-        // memo 상시 수정가능
-        if (hasMemo) {
-            day.setDayMemo(req.memo());
-        }
-
-        // 여기부터 result/finalize 정책
 
         // run이 ENDED면 result/finalize 불가 (memo만)
         if (run.isEnded()) {
