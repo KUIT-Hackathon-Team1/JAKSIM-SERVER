@@ -5,5 +5,4 @@ public enum DayResult {
     DONE,
     PARTIAL,
     FAIL
-
 }
