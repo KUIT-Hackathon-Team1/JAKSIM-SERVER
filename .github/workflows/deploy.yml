@@ -39,15 +39,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Ensure deploy directory exists
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          script: |
-            mkdir -p /home/${{ secrets.USERNAME }}/jaksim
-
       - name: Upload docker-compose.prod.yml to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
